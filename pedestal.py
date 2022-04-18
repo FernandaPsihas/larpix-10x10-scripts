@@ -41,12 +41,13 @@ def main(controller_config=_default_controller_config, periodic_trigger_cycles=_
 
     for chip_key, chip in [(chip_key, chip) for (chip_key, chip) in c.chips.items() if chip_key in chip_keys]:
         # Disable channels
-        #print(' disabling channels: ')
+        if not len(disabled_channels) == 0:
+            print(' disabling channels: ')
         for disabled_key in disabled_channels:
             if disabled_key == chip_key or disabled_key == 'All':
                 for disabled_channel in disabled_channels[disabled_key]:
                     chip.config.csa_enable[disabled_channel] = 0
-                    #print('     ', disabled_channel)
+                    print('     ', disabled_channel)
         #print(' --- chip_key:', chip_key, ' --- ')
         chip.config.periodic_trigger_mask = [1]*64
         chip.config.channel_mask = [1]*64

@@ -7,6 +7,8 @@ import base
 import argparse
 import json
 
+from datetime import datetime
+
 _default_controller_config=None
 _default_chip_key=None
 _default_threshold=128
@@ -17,7 +19,7 @@ def main(controller_config=_default_controller_config, chip_key=_default_chip_ke
     print('START ROUGH LEAKAGE')
 
     # create controller
-    c = base.main(controller_config, logger=True)
+    c = base.main(controller_config, logger=True, filename="datalog_%s_PST_leakage_single.h5" % datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
 
     chips_to_test = c.chips.keys()
     if not chip_key is None:
