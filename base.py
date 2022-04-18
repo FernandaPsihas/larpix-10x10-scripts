@@ -6,8 +6,12 @@ import larpix
 import larpix.io
 import larpix.logger
 
-_vddd_dac = 0xd8e4 # for ~1.8V operation
-_vdda_dac = 0xd8e4
+# _vddd_dac = 0xd8e4 # for ~1.8V operation
+# _vdda_dac = 0xd8e4
+# For 1-chip board
+_vddd_dac = 0xd840  # for ~1.8V operation
+_vdda_dac = 0xd507
+
 _uart_phase = 0
 
 _default_controller_config=None
@@ -15,7 +19,7 @@ _default_logger=False
 _default_reset=True
 
 _default_chip_id = 2
-_default_io_channel = 1
+_default_io_channel = 2
 _default_miso_ds = 0
 _default_mosi = 0
 
