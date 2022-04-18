@@ -17,7 +17,7 @@ def main(controller_config=_default_controller_config, chip_key=_default_chip_ke
     print('START ROUGH LEAKAGE')
 
     # create controller
-    c = base.main(controller_config, logger=True)
+    c = base.main(controller_config, logger=True, filename='rough.h5')
 
     chips_to_test = c.chips.keys()
     if not chip_key is None:

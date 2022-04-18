@@ -15,6 +15,7 @@ import load_config
 import argparse
 import json
 from collections import defaultdict
+from datetime import datetime
 
 _default_config_name=None
 _default_controller_config=None
@@ -37,13 +38,15 @@ def main(config_name=_default_config_name, controller_config=_default_controller
 
     # create controller
     c = None
+    # save
+    filename = "datalog_%s_PST_internal_pulse.h5" % datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     if config_name is None:
-        c = base.main(controller_config, logger=True)
+        c = base.main(controller_config, logger=True, filename=filename)
     else:
         if controller_config is None:
-            c = load_config.main(config_name, logger=True)
+            c = load_config.main(config_name, logger=True, filename=filename)
         else:
-            c = load_config.main(config_name, controller_config, logger=True)
+            c = load_config.main(config_name, controller_config, logger=True, filename=filename)
 
     # set initial configuration
     print('channels', channels)

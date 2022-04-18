@@ -41,7 +41,8 @@ def _reset_and_reload(c, controller_config):
         c.write_configuration(chip_key)
         ok, diff = c.verify_configuration(chip_key, timeout=0.1)
         if not ok:
-            print('config error',diff[chip_key])
+            # added additional location info for debugging in various places
+            print('[_reset_and_reload] config error',diff[chip_key])
     print('done resetting and reloading configs')
     return c_new
 
@@ -92,14 +93,16 @@ def main(controller_config=None, chip_key=None, channels=_default_channels, disa
                 c[chip_key].config.channel_mask[channel] = 0
         for channel in _default_ignore[chip_key]:
             c[chip_key].config.csa_enable[channel] = 0
-            
+
         # write configuration
         print('verify',chip_key)
         c.write_configuration(chip_key)
         base.flush_data(c)
-        ok, diff = c.verify_configuration(chip_key, timeout=0.1)
+        # has trouble reading configuration from chips, so boosted the recursions high enough that it is able to read
+        #  and confirm all registers were set correctly
+        ok, diff = c.verify_configuration(chip_key, timeout=0.1, n=200)
         if not ok:
-            print('config error',diff[chip_key])
+            print('[autoconfig_thresholds::main] config error',diff[chip_key])
             base.flush_data(c)
         c.io.double_send_packets = True
 
@@ -126,6 +129,7 @@ def main(controller_config=None, chip_key=None, channels=_default_channels, disa
                         channels_to_configure[chip_key].remove(channel)
                         repeat = True
                     if rate > reset_threshold:
+                        print('[verify no high rate channels]')
                         c = _reset_and_reload(c,controller_config)
             if repeat:
                 c.write_configuration(chip_key)
@@ -155,6 +159,7 @@ def main(controller_config=None, chip_key=None, channels=_default_channels, disa
                 c.write_configuration(chip_key,'threshold_global')
                 c.write_configuration(chip_key,'threshold_global')                
             if rate > reset_threshold:
+                print('[walk down global threshold]')
                 c = _reset_and_reload(c,controller_config)
 
         # walk down global threshold
@@ -194,6 +199,7 @@ def main(controller_config=None, chip_key=None, channels=_default_channels, disa
                 c.write_configuration(chip_key,'threshold_global')
                 c.write_configuration(chip_key,'threshold_global')
             if rate > reset_threshold:
+                print('[increasing global threshold]')
                 c = _reset_and_reload(c,controller_config)
 
         # continue once rate is below target
@@ -233,6 +239,7 @@ def main(controller_config=None, chip_key=None, channels=_default_channels, disa
                 c.write_configuration(chip_key,'pixel_trim_dac')
                 c.write_configuration(chip_key,'pixel_trim_dac')
             if rate > reset_threshold:
+                print('[decreasing pixel trim]')
                 c = _reset_and_reload(c,controller_config)            
 
         # walk down trims
@@ -280,6 +287,7 @@ def main(controller_config=None, chip_key=None, channels=_default_channels, disa
                 c.write_configuration(chip_key,'pixel_trim_dac')
                 c.write_configuration(chip_key,'pixel_trim_dac')
             if rate > reset_threshold:
+                print('[increasing pixel trim]')
                 c = _reset_and_reload(c,controller_config)
 
         # continue once rate is below target
